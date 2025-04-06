@@ -6,17 +6,76 @@
 
 /* ALU */
 /* 10 Points */
-void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
+//check value of ALUControl
+void ALU(unsigned A, unsigned B, char ALUControl, unsigned *ALUresult, char *Zero)
 {
-    if(ALUControl == 0){
-        // do addition between A and B
+      //addition - 000
+    if (ALUControl == 0) {
+        // Addition
         *ALUresult = A + B;
     }
-    else if(ALUControl == 1){
-        // do subtraction between A and B
+
+    //subtraction - 001
+    else if (ALUControl == 1) {
+        // Subtraction
         *ALUresult = A - B;
     }
+
+    // if A < B, Z = 1; otherwise, Z = 0  - 010
+    else if (ALUControl == 2) {
+        if ((int)A < (int)B) {
+            *ALUresult = 1;
+        } else {
+            *ALUresult = 0;
+        }
+    }
+
+    //if A < B, Z = 1; otherwise, Z = 0 (A and B are unsigned integers) - 011
+    else if (ALUControl == 3) {
+        if (A < B) {
+            *ALUresult = 1;
+        } else {
+            *ALUresult = 0;
+        }
+    }
+
+    //AND - 100
+    else if (ALUControl == 4) {
+        // AND
+        *ALUresult = A & B;
+    }
+
+    //OR - 101
+    else if (ALUControl == 5) {
+        // OR (bitwise)
+        *ALUresult = A | B;
+    }
+
+    //Z = Shift B left by 16 bits - 110
+    else if (ALUControl == 6)
+    {
+        *ALUresult = B << 16;
+    }
+
+    //NOT A - 111
+    else if (ALUControl == 7)
+    {
+        *ALUresult = ~A;
+    }
+
+    //base case
+    else {
+        *ALUresult = 0;
+    }
+
+
+    if (*ALUresult == 0) {
+        *Zero = 1;
+    } else {
+        *Zero = 0;
+    }
 }
+
 
 /* instruction fetch */
 /* 10 Points */
