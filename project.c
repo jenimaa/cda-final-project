@@ -68,7 +68,7 @@ void ALU(unsigned A, unsigned B, char ALUControl, unsigned *ALUresult, char *Zer
         *ALUresult = 0;
     }
 
-
+      // otherwise set to 0
     if (*ALUresult == 0) {
         *Zero = 1;
     } else {
