@@ -1,6 +1,8 @@
 //
-// Jeniffer Martinez
+// WRITTEN BY: Jeniffer Martinez and Kamden Hayes
+//Final Project
 // CDA 3103
+
 #include "spimcore.h"
 
 
