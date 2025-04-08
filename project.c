@@ -3,12 +3,10 @@
 //Final Project
 // CDA 3103
 
-#include "spimcore.h"
-
-
 /* ALU */
 /* 10 Points */
 //check value of ALUControl
+//Assign Zero to 1 if the result is zero; otherwise assign 0
 void ALU(unsigned A, unsigned B, char ALUControl, unsigned *ALUresult, char *Zero)
 {
       //addition - 000
@@ -70,7 +68,7 @@ void ALU(unsigned A, unsigned B, char ALUControl, unsigned *ALUresult, char *Zer
         *ALUresult = 0;
     }
 
-      // otherwise set to 0
+
     if (*ALUresult == 0) {
         *Zero = 1;
     } else {
@@ -97,6 +95,7 @@ int instruction_fetch(unsigned PC,unsigned *Mem,unsigned *instruction)
 
 /* instruction partition */
 /* 10 Points */
+//Partition instruction into : op, r1, r2, r3, funct, offset, jsec
 void instruction_partition(unsigned instruction, unsigned *op, unsigned *r1,unsigned *r2, unsigned *r3, unsigned *funct, unsigned *offset, unsigned *jsec)
 {
     *op = (instruction & 0xFC000000) >> 26;
@@ -129,6 +128,7 @@ void read_register(unsigned r1,unsigned r2,unsigned *Reg,unsigned *data1,unsigne
 
 /* Sign Extend */
 /* 10 Points */
+//Assign the sign-extended value of offset to extended_value
 void sign_extend(unsigned offset,unsigned *extended_value)
 {
 
@@ -136,6 +136,8 @@ void sign_extend(unsigned offset,unsigned *extended_value)
 
 /* ALU operations */
 /* 10 Points */
+// use ALU on inputs based on ALUop and funct
+//Return 1 if a halt condition occurs; otherwise, return 0.
 int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigned funct,char ALUOp,char ALUSrc,unsigned *ALUresult,char *Zero)
 {
 
@@ -143,14 +145,37 @@ int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigne
 
 /* Read / Write Memory */
 /* 10 Points */
-int rw_memory(unsigned ALUresult,unsigned data2,char MemWrite,char MemRead,unsigned *memdata,unsigned *Mem)
+/* 10 Points */
+//determine if a memory write operation or memory read operation or neither
+//reading from memory --> ALUresult to memdata
+//writing to memory --> write value of data2 to memory location ALUresult
+//Return 1 if a halt condition occurs; otherwise, return 0.
+int rw_memory(unsigned ALUresult, unsigned data2, char MemWrite, char MemRead, unsigned *memdata, unsigned *Mem)
 {
+    for (int i = 0; i < 2; i++) {
+        if (i == 0 && MemRead) {
+            if ((ALUresult % 4 == 0) && ALUresult < 65536)
+                *memdata = Mem[ALUresult >> 2];
+            else
+                return 1;
+        }
 
+        if (i == 1 && MemWrite) {
+            if ((ALUresult % 4 == 0) && ALUresult < 65536)
+                Mem[ALUresult >> 2] = data2;
+            else
+                return 1;
+        }
+    }
+
+    return 0;
 }
+
 
 
 /* Write Register */
 /* 10 Points */
+//Write data ALUresult or memdata to r2 or r3
 void write_register(unsigned r2,unsigned r3,unsigned memdata,unsigned ALUresult,char RegWrite,char RegDst,char MemtoReg,unsigned *Reg)
 {
 
@@ -158,8 +183,11 @@ void write_register(unsigned r2,unsigned r3,unsigned memdata,unsigned ALUresult,
 
 /* PC update */
 /* 10 Points */
+//Update the program counter (PC).
 void PC_update(unsigned jsec,unsigned extended_value,char Branch,char Jump,char Zero,unsigned *PC)
 {
 
 }
+
+
 
