@@ -186,7 +186,22 @@ void write_register(unsigned r2,unsigned r3,unsigned memdata,unsigned ALUresult,
 //Update the program counter (PC).
 void PC_update(unsigned jsec,unsigned extended_value,char Branch,char Jump,char Zero,unsigned *PC)
 {
+          // Go to next instruction if not a branch or jump
+    if(Jump == 0x0 && Branch == 0x0){
+        *PC += 4;
+    }
 
+    //Jump operation
+    if(Branch == 0x0 && Jump == 0x1){
+        unsigned PC4Bits = (*PC + 4) & 0xF0000000;
+        unsigned shift = jsec<<2;
+        *PC = PC4Bits | shift;
+    }
+
+    //Branch Operation
+    if(Branch == 0x1 && Jump == 0x0 && Zero == 0x1){
+        *PC = (extended_value << 2) + (*PC + 4);
+    }
 }
 
 
