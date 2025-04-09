@@ -131,7 +131,21 @@ void read_register(unsigned r1,unsigned r2,unsigned *Reg,unsigned *data1,unsigne
 //Assign the sign-extended value of offset to extended_value
 void sign_extend(unsigned offset,unsigned *extended_value)
 {
+        //Masks for checking sign and adding one to the first 16 bits (if needed)
+        unsigned signCheckMask = 0x00008000;
+        unsigned incrementMask = 0xffff0000;
+        unsigned result = offset & signCheckMask;
 
+        //Negative Case
+        if(result > 1){
+            //Set first 16 bits to one to show a negative
+            *extended_value = offset | incrementMask;
+        }
+        //Positive Case
+        if(result == 0){
+            //Put 0 in first 16 bits to show a positive
+            *extended_value = offset;
+        }
 }
 
 /* ALU operations */
