@@ -271,28 +271,31 @@ int rw_memory(unsigned ALUresult, unsigned data2, char MemWrite, char MemRead, u
 //Write data ALUresult or memdata to r2 or r3
 void write_register(unsigned r2, unsigned r3, unsigned memdata, unsigned ALUresult, char RegWrite, char RegDst, char MemtoReg, unsigned *Reg)
 {
-    if (RegWrite == 1)
+      
+    if (RegWrite == 1) // write to register
     {
         if (RegDst == 1)
         {
-            if (MemtoReg == 1)
+            if (MemtoReg == 1) // memdata written to register
             {
-                Reg[r3] = memdata;
+                Reg[r3] = memdata; //memdata to register 3
             }
             else
             {
-                Reg[r3] = ALUresult;
+                Reg[r3] = ALUresult; // ALUresult to register 3
             }
         }
-        else
+
+
+        else // RegDst == 0;
         {
             if (MemtoReg == 1)
             {
-                Reg[r2] = memdata;
+                Reg[r2] = memdata; // memdata to register 2
             }
             else
             {
-                Reg[r2] = ALUresult;
+                Reg[r2] = ALUresult; // ALUresult to register 2
             }
         }
     }
