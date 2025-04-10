@@ -238,6 +238,7 @@ int instruction_decode(unsigned op,struct_controls *controls)
     //Return 0 if switch statement is broken out of
     return 0;
 }
+
 /* Read Register */
 /* 5 Points */
 // read registers and store into data1 and data2
