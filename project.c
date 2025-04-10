@@ -276,7 +276,89 @@ void sign_extend(unsigned offset,unsigned *extended_value)
 //Return 1 if a halt condition occurs; otherwise, return 0.
 int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigned funct,char ALUOp,char ALUSrc,unsigned *ALUresult,char *Zero)
 {
+      switch (ALUOp) {
+        //In all cases with "if(ALUSrc==1)", if the ALUSrc variable is one then extended_value is used instead of data2
 
+        //ADD
+        case 0: 
+        if (ALUSrc == 1){
+            ALU(data1, extended_value, ALUOp, ALUresult, Zero);
+        }
+        else{ 
+            ALU(data1, data2, ALUOp, ALUresult, Zero);
+        }
+        break;
+
+        //SUB
+        case 1: 
+        if (ALUSrc == 1){
+            ALU(data1, extended_value, ALUOp, ALUresult, Zero);
+        }
+        else{
+            ALU(data1, data2, ALUOp, ALUresult, Zero);
+        }
+        break;
+
+        //SLT
+        case 2: 
+        if (ALUSrc == 1){
+            ALU(data1, extended_value, ALUOp, ALUresult, Zero);
+        }
+        else{
+            ALU(data1, data2, ALUOp, ALUresult, Zero);
+        }
+        break;
+
+        //SLTU
+        case 3:
+        if (ALUSrc == 1){
+            ALU(data1, extended_value, ALUOp, ALUresult, Zero);
+        }
+        else{
+            ALU(data1, data2, ALUOp, ALUresult, Zero);
+        }        
+        break;
+        
+        //AND
+        case 4:
+        if (ALUSrc == 1){
+            ALU(data1, extended_value, ALUOp, ALUresult, Zero);
+        }
+        else{
+            ALU(data1, data2, ALUOp, ALUresult, Zero);
+        }
+        break;
+
+        //OR
+        case 5: 
+        if (ALUSrc == 1){
+            ALU(data1, extended_value, ALUOp, ALUresult, Zero);
+        }
+        else{
+            ALU(data1, data2, ALUOp, ALUresult, Zero);
+        }    
+        break;
+        //SLL
+        case 6:
+        if (ALUSrc == 1){
+            ALU(data1, extended_value, ALUOp, ALUresult, Zero);
+        }
+        else{
+            ALU(data1, data2, ALUOp, ALUresult, Zero);
+        }
+        break;
+        
+        //R-TYPE
+        case 7:
+        return rType_Decode(data1, data2, funct, ALUresult, Zero);
+        break;
+
+        //Return 1 if none of the switch cases were met (Halt)
+        default: return 1;
+        }
+    
+    //If the swtich is broken out of then return 0 to signal no halt
+    return 0;
 }
 
 /* Read / Write Memory */
