@@ -273,6 +273,45 @@ void sign_extend(unsigned offset,unsigned *extended_value)
         }
 }
 
+int rType_Decode(unsigned data1, unsigned data2, unsigned funct, unsigned *ALUresult, char *Zero) {
+    switch(funct){
+            //ADD
+            case 32:
+            ALU(data1, data2, 0, ALUresult, Zero);
+            break;
+
+            //SUBTRACT
+            case 34: 
+            ALU(data1, data2, 1, ALUresult, Zero);
+            break;
+
+            //OR
+            case 37:
+            ALU(data1, data2, 5, ALUresult, Zero);
+            break;
+            
+            //AND
+            case 36:
+            ALU(data1, data2, 4, ALUresult, Zero);
+            break;
+
+            //SLT
+            case 42:
+            ALU(data1, data2, 2, ALUresult, Zero);
+            break;
+
+            //SLTU
+            case 43:
+            ALU(data1, data2, 3, ALUresult, Zero);
+            break;
+
+            //Return 1 to halt if none of the cases are met
+            default:return 1;
+    }
+    //Don't halt if the switch is broken out of
+    return 0;
+}
+
 /* ALU operations */
 /* 10 Points */
 // use ALU on inputs based on ALUop and funct
