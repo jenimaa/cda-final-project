@@ -3,6 +3,7 @@
 //Final Project
 // CDA 3103
 
+#include <stdio.h>
 #include "spimcore.h"
 
 /* ALU */
