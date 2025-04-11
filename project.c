@@ -3,6 +3,8 @@
 //Final Project
 // CDA 3103
 
+#include "spimcore.h"
+
 /* ALU */
 /* 10 Points */
 //check value of ALUControl
