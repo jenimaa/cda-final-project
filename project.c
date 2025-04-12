@@ -118,7 +118,7 @@ int instruction_decode(unsigned op,struct_controls *controls)
 {
         switch (op) {
         //R-TYPE
-        case 0x00000000: 
+        case 0x00: 
         controls->RegDst = 1;
         controls->RegWrite = 1;
         controls->Jump = 0;
@@ -131,7 +131,7 @@ int instruction_decode(unsigned op,struct_controls *controls)
         break;
         
         //ADDI
-        case 0x20000000: 
+        case 0x08: 
         controls->RegDst = 0;
         controls->RegWrite = 1;
         controls->Jump = 0;
@@ -144,7 +144,7 @@ int instruction_decode(unsigned op,struct_controls *controls)
         break;
         
         //LW
-        case 0x8C000000: 
+        case 0x23: 
         controls->RegDst = 0;
         controls->RegWrite = 1;
         controls->Jump = 0;
@@ -157,7 +157,7 @@ int instruction_decode(unsigned op,struct_controls *controls)
         break;
         
         //SW
-        case 0xAC000000:
+        case 0x2B:
         controls->RegDst = 0;
         controls->RegWrite = 0;
         controls->Jump = 0;
@@ -170,7 +170,7 @@ int instruction_decode(unsigned op,struct_controls *controls)
         break;
         
         //LUI
-        case 0x3C000000:
+        case 0x0F:
         controls->RegDst = 0;
         controls->RegWrite = 1;
         controls->Jump = 0;
@@ -183,7 +183,7 @@ int instruction_decode(unsigned op,struct_controls *controls)
         break;
         
         //SLTI
-        case 0x28000000: 
+        case 0x0A: 
         controls->RegDst = 0;
         controls->RegWrite = 1;
         controls->Jump = 0;
@@ -196,7 +196,7 @@ int instruction_decode(unsigned op,struct_controls *controls)
         break;
         
         //SLTIU
-        case 0x2C000000: 
+        case 0x0B: 
         controls->RegDst = 0;
         controls->RegWrite = 1;
         controls->Jump = 0;
@@ -209,7 +209,7 @@ int instruction_decode(unsigned op,struct_controls *controls)
         break;
         
         //BEQ
-        case 0x10000000:
+        case 0x04:
         controls->RegDst = 2; 
         controls->RegWrite = 0;
         controls->Jump = 0;
@@ -222,7 +222,7 @@ int instruction_decode(unsigned op,struct_controls *controls)
         break;
     
         //Jump
-        case 0x08000000:
+        case 0x02:
         controls->RegDst = 2;
         controls->RegWrite = 0;
         controls->Jump = 1;
@@ -274,136 +274,105 @@ void sign_extend(unsigned offset,unsigned *extended_value)
         }
 }
 
-int rType_Decode(unsigned data1, unsigned data2, unsigned funct, unsigned *ALUresult, char *Zero) {
-    switch(funct){
-            //ADD
-            case 32:
-            ALU(data1, data2, 0, ALUresult, Zero);
-            break;
-
-            //SUBTRACT
-            case 34: 
-            ALU(data1, data2, 1, ALUresult, Zero);
-            break;
-
-            //OR
-            case 37:
-            ALU(data1, data2, 5, ALUresult, Zero);
-            break;
-            
-            //AND
-            case 36:
-            ALU(data1, data2, 4, ALUresult, Zero);
-            break;
-
-            //SLT
-            case 42:
-            ALU(data1, data2, 2, ALUresult, Zero);
-            break;
-
-            //SLTU
-            case 43:
-            ALU(data1, data2, 3, ALUresult, Zero);
-            break;
-
-            //Return 1 to halt if none of the cases are met
-            default:return 1;
-    }
-    //Don't halt if the switch is broken out of
-    return 0;
-}
-
 /* ALU operations */
 /* 10 Points */
 // use ALU on inputs based on ALUop and funct
 //Return 1 if a halt condition occurs; otherwise, return 0.
 int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigned funct,char ALUOp,char ALUSrc,unsigned *ALUresult,char *Zero)
 {
-      switch (ALUOp) {
-        //In all cases with "if(ALUSrc==1)", if the ALUSrc variable is one then extended_value is used instead of data2
+        //R-Type case
+        if (ALUOp == 7) {
+            switch (funct) {
+                case 32: ALU(data1, data2, 0, ALUresult, Zero); break;
+                case 34: ALU(data1, data2, 1, ALUresult, Zero); break;
+                case 42: ALU(data1, data2, 2, ALUresult, Zero); break;
+                case 43: ALU(data1, data2, 3, ALUresult, Zero); break;
+                case 36: ALU(data1, data2, 4, ALUresult, Zero); break;
+                case 37: ALU(data1, data2, 5, ALUresult, Zero); break;
+                default: return 1;
+            }
+        } else {
+        switch (ALUOp) {
+            //In all cases with "if(ALUSrc==1)", if the ALUSrc variable is one then extended_value is used instead of data2
 
-        //ADD
-        case 0: 
-        if (ALUSrc == 1){
-            ALU(data1, extended_value, ALUOp, ALUresult, Zero);
-        }
-        else{ 
-            ALU(data1, data2, ALUOp, ALUresult, Zero);
-        }
-        break;
+            //ADD
+            case 0: 
+            if (ALUSrc == 1){
+                ALU(data1, extended_value, ALUOp, ALUresult, Zero);
+            }
+            else{ 
+                ALU(data1, data2, ALUOp, ALUresult, Zero);
+            }
+            break;
 
-        //SUB
-        case 1: 
-        if (ALUSrc == 1){
-            ALU(data1, extended_value, ALUOp, ALUresult, Zero);
-        }
-        else{
-            ALU(data1, data2, ALUOp, ALUresult, Zero);
-        }
-        break;
+            //SUB
+            case 1: 
+            if (ALUSrc == 1){
+                ALU(data1, extended_value, ALUOp, ALUresult, Zero);
+            }
+            else{
+                ALU(data1, data2, ALUOp, ALUresult, Zero);
+            }
+            break;
 
-        //SLT
-        case 2: 
-        if (ALUSrc == 1){
-            ALU(data1, extended_value, ALUOp, ALUresult, Zero);
-        }
-        else{
-            ALU(data1, data2, ALUOp, ALUresult, Zero);
-        }
-        break;
+            //SLT
+            case 2: 
+            if (ALUSrc == 1){
+                ALU(data1, extended_value, ALUOp, ALUresult, Zero);
+            }
+            else{
+                ALU(data1, data2, ALUOp, ALUresult, Zero);
+            }
+            break;
 
-        //SLTU
-        case 3:
-        if (ALUSrc == 1){
-            ALU(data1, extended_value, ALUOp, ALUresult, Zero);
-        }
-        else{
-            ALU(data1, data2, ALUOp, ALUresult, Zero);
-        }        
-        break;
+            //SLTU
+            case 3:
+            if (ALUSrc == 1){
+                ALU(data1, extended_value, ALUOp, ALUresult, Zero);
+            }
+            else{
+                ALU(data1, data2, ALUOp, ALUresult, Zero);
+            }        
+            break;
+            
+            //AND
+            case 4:
+            if (ALUSrc == 1){
+                ALU(data1, extended_value, ALUOp, ALUresult, Zero);
+            }
+            else{
+                ALU(data1, data2, ALUOp, ALUresult, Zero);
+            }
+            break;
+
+            //OR
+            case 5: 
+            if (ALUSrc == 1){
+                ALU(data1, extended_value, ALUOp, ALUresult, Zero);
+            }
+            else{
+                ALU(data1, data2, ALUOp, ALUresult, Zero);
+            }    
+            break;
+            //SLL
+            case 6:
+            if (ALUSrc == 1){
+                ALU(data1, extended_value, ALUOp, ALUresult, Zero);
+            }
+            else{
+                ALU(data1, data2, ALUOp, ALUresult, Zero);
+            }
+            break;
+            
+
+            //Return 1 if none of the switch cases were met (Halt)
+            default: return 1;
+            }
         
-        //AND
-        case 4:
-        if (ALUSrc == 1){
-            ALU(data1, extended_value, ALUOp, ALUresult, Zero);
-        }
-        else{
-            ALU(data1, data2, ALUOp, ALUresult, Zero);
-        }
-        break;
-
-        //OR
-        case 5: 
-        if (ALUSrc == 1){
-            ALU(data1, extended_value, ALUOp, ALUresult, Zero);
-        }
-        else{
-            ALU(data1, data2, ALUOp, ALUresult, Zero);
-        }    
-        break;
-        //SLL
-        case 6:
-        if (ALUSrc == 1){
-            ALU(data1, extended_value, ALUOp, ALUresult, Zero);
-        }
-        else{
-            ALU(data1, data2, ALUOp, ALUresult, Zero);
-        }
-        break;
-        
-        //R-TYPE
-        case 7:
-        return rType_Decode(data1, data2, funct, ALUresult, Zero);
-        break;
-
-        //Return 1 if none of the switch cases were met (Halt)
-        default: return 1;
-        }
-    
-    //If the swtich is broken out of then return 0 to signal no halt
-    return 0;
+        //If the swtich is broken out of then return 0 to signal no halt
+        return 0;
+    }
 }
-
 /* Read / Write Memory */
 /* 10 Points */
 /* 10 Points */
@@ -491,6 +460,3 @@ void PC_update(unsigned jsec,unsigned extended_value,char Branch,char Jump,char 
         *PC = (extended_value << 2) + (*PC + 4);
     }
 }
-
-
-
